@@ -58,8 +58,29 @@ footer .sub{opacity:.6;margin-top:14px;font-weight:450;font-size:14px;}
 #lb{position:fixed;inset:0;background:rgba(20,18,10,.88);display:none;align-items:center;justify-content:center;z-index:100;padding:24px;cursor:zoom-out;}
 #lb.on{display:flex;}
 #lb img{max-width:94vw;max-height:92vh;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,.5);}
+/* password gate */
+body.locked{overflow:hidden;}
+body.locked header.top,body.locked>.wrap{filter:blur(16px);pointer-events:none;user-select:none;}
+#gate{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;background:var(--bg);padding:24px;}
+body.locked #gate{display:flex;}
+.gatebox{width:100%;max-width:430px;text-align:center;}
+.gatebox .gmark{height:30px;width:auto;margin-bottom:30px;}
+.gatebox h2{font-weight:800;font-size:clamp(26px,5vw,34px);letter-spacing:-.02em;margin:0 0 10px;}
+.gatebox p{opacity:.7;font-size:15px;line-height:1.5;margin:0 0 26px;font-weight:400;}
+.gatebox form{display:flex;gap:10px;}
+.gatebox input{flex:1;padding:15px 16px;border:1px solid var(--line);border-radius:12px;background:#fff;font-family:inherit;font-size:16px;color:var(--ink);}
+.gatebox input:focus{outline:none;border-color:var(--ink);}
+.gatebox button{padding:15px 22px;border:0;border-radius:12px;background:var(--ink);color:#fff;font-family:inherit;font-weight:600;font-size:15px;cursor:pointer;}
+.gateerr{color:var(--coral);font-size:13px;margin-top:14px;min-height:16px;font-weight:500;}
 </style></head>
-<body>
+<body class="locked">
+<div id="gate"><div class="gatebox">
+  <img class="gmark" src="assets/brand/matic-wordmark.svg" alt="Matic">
+  <h2>Customer Love</h2>
+  <p>This page is private. Please enter the password to continue.</p>
+  <form id="gform"><input id="gin" type="password" placeholder="Password" autocomplete="current-password" autofocus><button type="submit">Enter</button></form>
+  <div class="gateerr" id="gerr"></div>
+</div></div>
 <header class="top"><div class="wrap"><img class="logo" src="assets/brand/matic-wordmark.svg" alt="Matic"><div class="tag">Customer Love</div></div></header>
 <div class="wrap">
   <div class="hero">
@@ -80,5 +101,14 @@ const lb=document.getElementById('lb'),lbi=lb.querySelector('img');
 document.querySelectorAll('[data-lb]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();lbi.src=a.getAttribute('href');lb.classList.add('on');}));
 lb.addEventListener('click',()=>{lb.classList.remove('on');lbi.src='';});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){lb.classList.remove('on');lbi.src='';}});
+// ---- password gate ----
+const GATE_HASH="ae85112e4eaa019dba2841d378b44184d4064b1acfc6ca700d2b06724e4eabdb";
+const gform=document.getElementById('gform'),gin=document.getElementById('gin'),gerr=document.getElementById('gerr');
+async function _sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+function _unlock(){document.body.classList.remove('locked');}
+try{if(sessionStorage.getItem('cl_ok')==='1')_unlock();}catch(e){}
+gform&&gform.addEventListener('submit',async e=>{e.preventDefault();const h=await _sha((gin.value||'').trim());
+  if(h===GATE_HASH){try{sessionStorage.setItem('cl_ok','1');}catch(e){}_unlock();}
+  else{gerr.textContent='Incorrect password. Please try again.';gin.value='';gin.focus();}});
 </script>
 </body></html>
