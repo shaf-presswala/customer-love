@@ -102,7 +102,7 @@ document.querySelectorAll('[data-lb]').forEach(a=>a.addEventListener('click',e=>
 lb.addEventListener('click',()=>{lb.classList.remove('on');lbi.src='';});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){lb.classList.remove('on');lbi.src='';}});
 // ---- password gate ----
-const GATE_HASH="ae85112e4eaa019dba2841d378b44184d4064b1acfc6ca700d2b06724e4eabdb";
+const GATE_HASH="6b467d3e31c3840c317cb7873000a5cb85de1fd58ba3d589c41cce16bbec73d1";
 const gform=document.getElementById('gform'),gin=document.getElementById('gin'),gerr=document.getElementById('gerr');
 async function _sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
 function _unlock(){document.body.classList.remove('locked');}
